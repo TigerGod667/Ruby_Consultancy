@@ -1,0 +1,442 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Ruby</title>
+    <script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.2.32/angular.min.js"></script>
+    <style>
+        body {
+            /* aquamarine */
+            background-color: mediumaquamarine;
+        }
+        input[type=number]{
+            -moz-appearance: textfield;
+        }
+        input::-webkit-outer-spin-button,
+        input::-webkit-inner-spin-button {
+            -webkit-appearance: none;
+            margin: 0;
+        }
+        .container-class {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            flex-direction: column;
+        }
+
+        .container {
+            background-color: aliceblue;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            flex-direction: column;
+            width: 80%;
+            padding: 10px;
+            font-size: 20px;
+        }
+        table, th, td {
+            background-color: antiquewhite;
+            border: 2px solid white;
+            border-collapse: collapse;
+            text-align: center;
+        }
+        input {
+            font-size: 18px;
+        }
+    </style>
+</head>
+<body>
+    <center><h1>Order Sheet</h1></center>
+    <div class="container-class" ng-app="myApp" ng-controller="myController">
+        <div class="container" id="container">
+            <div style="width:98%;"><span><input type="text" style="border:none;height:40px;border-bottom: 1px solid black;width:200px;background:transparent;color:black;font-size:18px;" ng-model="inputProduct" placeholder="Enter the Product"/></span><br><br></div>
+            <table id='products' style="height:100%;width:100%;">
+                <tr>
+                    <th style="cursor: pointer;" ng-click="sortBasedOn('Name')">Name</th>
+                    <th style="cursor: pointer;" ng-click="sortBasedOn('Sales')">Sales</th>
+                    <th style="cursor: pointer;" ng-click="sortBasedOn('Vapus')">Vapus</th>
+                    <th style="cursor: pointer;" ng-click="sortBasedOn('Free')">Free</th>
+                    <th style="cursor: pointer;" ng-click="sortBasedOn('Offers')">Offers</th>
+                </tr>
+                <tr ng-repeat = "product in products | filter: {Name: inputProduct} | orderBy: category">
+                    <td>{{product.Name}}</td>
+                    <td><input id="{{product.Id}}" style="width:40%;" type="number" value="{{product.Sales}}" oninput="changeValues('Sales',this.id,this.value);calculateTotal('salesTotal','Sales');"/></td>
+                    <td><input id="{{product.Id}}" style="width:40%;" type="number" value="{{product.Vapus}}" oninput="changeValues('Vapus',this.id,this.value);calculateTotal('vapusTotal','Vapus');"/></td>
+                    <td><input id="{{product.Id}}" style="width:40%;" type="number" value="{{product.Free}}" oninput="changeValues('Free',this.id,this.value);calculateTotal('freeTotal','Free');"/></td>
+                    <td style="width:20%;">
+                        <SELECT id="{{product.Id}}" onchange="changeValues('Offer',this.id,this.value);">
+                            <option ng-repeat="offers in product.Offers">{{offers}}</option>
+                        </SELECT>
+                    </td>    
+                </tr>
+                <tr>
+                    <td colspan="5">&nbsp;</td>
+                </tr>
+                <tr>
+                    <td>Total</td>
+                    <td id="salesTotal"></td>
+                    <td id="vapusTotal"></td>
+                    <td id="freeTotal"></td>
+                    <td id="offerTotal"></td>
+                </tr>
+            </table><br>
+            <form method="post" action="/placeOrder">
+                <input type="hidden" name="date" id="date" value="<%= date %>"/>
+                <input type="hidden" name="customer" id="customer" value="<%= customer %>"/>
+                <input type="hidden" name="district" id="district" value="<%= district %>"/>
+                <input type="hidden" name="description" id="description" value="<%= description %>"/>
+                <input type="hidden" name="content" id="content" />
+                <input type="submit" name="Submit" value="Place Order" onclick="submitOrder(event)" />
+            </form>
+        </div>
+    </div>
+    <script>
+        products = [
+            {
+                Id: 1,
+                Name: "PP Badam",
+                Sales: 0,
+                Vapus:0,
+                Free: 0,
+                Offers: [
+                    "None",
+                    "Offer 1",
+                    "Offer 2",
+                    "Offer 3",
+                    "Offer 4",
+                    "Offer 5"
+                ],
+                Offer: "None"
+            },
+            {
+                Id: 2,
+                Name: "PP Rose",
+                Sales: 0,
+                Vapus:0,
+                Free: 0,
+                Offers: [
+                    "None",
+                    "Offer 1",
+                    "Offer 2",
+                    "Offer 3",
+                    "Offer 4",
+                    "Offer 5"
+                ],
+                Offer: "None"
+            },
+            {
+                Id: 3,
+                Name: "PP Milky Badam",
+                Sales: 0,
+                Vapus:0,
+                Free: 0,
+                Offers: [
+                    "None",
+                    "Offer 1",
+                    "Offer 2",
+                    "Offer 3",
+                    "Offer 4",
+                    "Offer 5"
+                ],
+                Offer: "None"
+            },
+            {
+                Id: 4,
+                Name: "PP Milkee Rose",
+                Sales: 0,
+                Vapus:0,
+                Free: 0,
+                Offers: [
+                    "None",
+                    "Offer 1",
+                    "Offer 2",
+                    "Offer 3",
+                    "Offer 4",
+                    "Offer 5"
+                ],
+                Offer: "None"
+            },
+            {
+                Id: 5,
+                Name: "PP Jigar",
+                Sales: 0,
+                Vapus:0,
+                Free: 0,
+                Offers: [
+                    "None",
+                    "Offer 1",
+                    "Offer 2",
+                    "Offer 3",
+                    "Offer 4",
+                    "Offer 5"
+                ],
+                Offer: "None"
+            },
+            {
+                Id: 6,
+                Name: "PP Pista",
+                Sales: 0,
+                Vapus:0,
+                Free: 0,
+                Offers: [
+                    "None",
+                    "Offer 1",
+                    "Offer 2",
+                    "Offer 3",
+                    "Offer 4",
+                    "Offer 5"
+                ],
+                Offer: "None"
+            },
+            {
+                Id: 7,
+                Name: "PP Tendy Coconut",
+                Sales: 0,
+                Vapus:0,
+                Free: 0,
+                Offers: [
+                    "None",
+                    "Offer 1",
+                    "Offer 2",
+                    "Offer 3",
+                    "Offer 4",
+                    "Offer 5"
+                ],
+                Offer: "None"
+            },
+            {
+                Id: 8,
+                Name: "PP Cashew",
+                Sales: 0,
+                Vapus:0,
+                Free: 0,
+                Offers: [
+                    "None",
+                    "Offer 1",
+                    "Offer 2",
+                    "Offer 3",
+                    "Offer 4",
+                    "Offer 5"
+                ],
+                Offer: "None"
+            },
+            {
+                Id: 9,
+                Name: "PP Coffee Shot",
+                Sales: 0,
+                Vapus:0,
+                Free: 0,
+                Offers: [
+                    "None",
+                    "Offer 1",
+                    "Offer 2",
+                    "Offer 3",
+                    "Offer 4",
+                    "Offer 5"
+                ],
+                Offer: "None"
+            },
+            {
+                Id: 10,
+                Name: "PP Vanilla",
+                Sales: 0,
+                Vapus:0,
+                Free: 0,
+                Offers: [
+                    "None",
+                    "Offer 1",
+                    "Offer 2",
+                    "Offer 3",
+                    "Offer 4",
+                    "Offer 5"
+                ],
+                Offer: "None"
+            },
+            {
+                Id: 11,
+                Name: "PP Choco",
+                Sales: 0,
+                Vapus:0,
+                Free: 0,
+                Offers: [
+                    "None",
+                    "Offer 1",
+                    "Offer 2",
+                    "Offer 3",
+                    "Offer 4",
+                    "Offer 5"
+                ],
+                Offer: "None"
+            },
+            {
+                Id: 12,
+                Name: "RGB Ruby Badam",
+                Sales: 0,
+                Vapus:0,
+                Free: 0,
+                Offers: [
+                    "None",
+                    "Offer 1",
+                    "Offer 2",
+                    "Offer 3",
+                    "Offer 4",
+                    "Offer 5"
+                ],
+                Offer: "None"
+            },
+            {
+                Id: 13,
+                Name: "RGB Ruby Rose",
+                Sales: 0,
+                Vapus:0,
+                Free: 0,
+                Offers: [
+                    "None",
+                    "Offer 1",
+                    "Offer 2",
+                    "Offer 3",
+                    "Offer 4",
+                    "Offer 5"
+                ],
+                Offer: "None"
+            },
+            {
+                Id: 14,
+                Name: "RGB Milky Badam",
+                Sales: 0,
+                Vapus:0,
+                Free: 0,
+                Offers: [
+                    "None",
+                    "Offer 1",
+                    "Offer 2",
+                    "Offer 3",
+                    "Offer 4",
+                    "Offer 5"
+                ],
+                Offer: "None"
+            },
+            {
+                Id: 15,
+                Name: "RGB Choco",
+                Sales: 0,
+                Vapus:0,
+                Free: 0,
+                Offers: [
+                    "None",
+                    "Offer 1",
+                    "Offer 2",
+                    "Offer 3",
+                    "Offer 4",
+                    "Offer 5"
+                ],
+                Offer: "None"
+            },
+            {
+                Id: 16,
+                Name: "PET Mango 600",
+                Sales: 0,
+                Vapus:0,
+                Free: 0,
+                Offers: [
+                    "None",
+                    "Offer 1",
+                    "Offer 2",
+                    "Offer 3",
+                    "Offer 4",
+                    "Offer 5"
+                ],
+                Offer: "None"
+            },
+            {
+                Id: 17,
+                Name: "PET Mango 250",
+                Sales: 0,
+                Vapus:0,
+                Free: 0,
+                Offers: [
+                    "None",
+                    "Offer 1",
+                    "Offer 2",
+                    "Offer 3",
+                    "Offer 4",
+                    "Offer 5"
+                ],
+                Offer: "None"
+            },
+            {
+                Id: 18,
+                Name: "PET Mango 200",
+                Sales: 0,
+                Vapus:0,
+                Free: 0,
+                Offers: [
+                    "None",
+                    "Offer 1",
+                    "Offer 2",
+                    "Offer 3",
+                    "Offer 4",
+                    "Offer 5"
+                ],
+                Offer: "None"
+            },
+            {
+                Id: 19,
+                Name: "PET Zappy 250",
+                Sales: 0,
+                Vapus:0,
+                Free: 0,
+                Offers: [
+                    "None",
+                    "Offer 1",
+                    "Offer 2",
+                    "Offer 3",
+                    "Offer 4",
+                    "Offer 5"
+                ],
+                Offer: "None"
+            }
+        ];
+        function submitOrder(event) {
+            var sales = document.getElementById("salesTotal").innerHTML;
+            var vapus = document.getElementById("vapusTotal").innerHTML;
+            var free = document.getElementById("freeTotal").innerHTML;
+            if ((sales=="" && vapus=="" && free=="") || (sales=="0" && vapus=="0" && free=="0")) {
+                alert("No Products Ordered!");
+                event.preventDefault();
+            }
+            
+        }
+        function changeValues(key,id,value) {
+            if (products[id-1][key]=="" || products[id-1][key]==NaN) {
+                products[id-1][key] = 0;
+            }
+            if (key!="Offer") products[id-1][key] = parseInt(value);
+            else products[id-1][key] = value;
+            document.getElementById("content").value = JSON.stringify(products);
+        }
+        function calculateTotal(id,key) {
+                var sum = 0;
+                for (var item in products) {
+                    sum += parseInt(products[item][key]);
+                }
+                document.getElementById(id).innerHTML = sum;
+            }
+        var app = angular.module("myApp",[]);
+        app.controller("myController",function($scope) {
+            $scope.products = products;
+            $scope.sortBasedOn = function(inputCategory) {
+		        if ($scope.category==inputCategory) {
+		            if ($scope.category[0]=='-') $scope.category = $scope.category.slice(1);
+		            else $scope.category = '-'+$scope.category;
+		        }
+		        else {
+		          $scope.category = inputCategory;
+		        }
+			  }
+        });
+    </script>
+</body>
+</html>

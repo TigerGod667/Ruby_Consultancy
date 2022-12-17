@@ -1,0 +1,66 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Ruby</title>
+    <script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.2.32/angular.min.js"></script>
+    <style>
+        body {
+            /* aquamarine */
+            background-color: mediumaquamarine;
+        }
+        input[type=number]{
+            -moz-appearance: textfield;
+        }
+        input::-webkit-outer-spin-button,
+        input::-webkit-inner-spin-button {
+            -webkit-appearance: none;
+            margin: 0;
+        }
+        .container-class {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            flex-direction: column;
+        }
+
+        .container {
+            background-color: aliceblue;
+            /* display: flex;
+            align-items: center;
+            justify-content: center;
+            flex-direction: column; */
+            width: 100%;
+            /* padding: 30px; */
+            font-size: 20px;
+            padding: 20%;
+        }
+
+        input {
+            font-size: 20px;
+            border: none;
+            height: 10%;
+            background-color: aliceblue;
+            border-bottom: 1px solid black;
+        }
+    </style>
+</head>
+<body style="display:flex;align-items:center;justify-content:center;height:97vh;flex-direction: column;">
+    <center><h1>Order Sheet</h1></center>
+    <div id="content-filler">
+        <div class="container-class" id="container-class">
+            <div class="container" id="container"><br>
+                <form name="orderform1" id="orderform1" action="/nextPage" method="POST">
+                    <div style="color: #666;">Date: <input type="date" name="date" id="date"/><br><br><br></div>
+                    <input type="text" name="customer" id="customer" placeholder="Customer"/><br><br><br>
+                    <input type="text" name="district" id="district" placeholder="District"/><br><br><br>
+                    <input type="text" name="description" id="description" placeholder="Description"/><br><br><br>
+                    <center><input type="submit" style="cursor:pointer;background-color: mediumaquamarine;font-size: 20px;border: none;border-radius: 5px;height:35px;width:90px;" id="next" name="next"></center>
+                </form>
+            </div>
+        </div>
+    </div>
+</body>
+</html>

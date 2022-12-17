@@ -1,0 +1,256 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Ruby</title>
+  <script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.2.32/angular.min.js"></script>
+  <style>
+
+    *{
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+      font-family: sans-serif;
+    }
+    :root{
+      --color-header: #1F1F1E;
+      --color-text: #F1F2EB;
+    }
+
+    .header{
+      background-color: var(--color-header);
+      display: flex;  
+      align-items: center;
+      justify-content: space-between;
+      padding: 1em;
+    }
+
+    .logo{
+      flex: 1;
+      color: var(--color-text);
+      text-transform: uppercase;
+      letter-spacing: 5px;
+      text-decoration: overline;
+    }
+
+    .nav-list{
+      list-style: none;
+      display: flex;
+      width: 300px;
+      justify-content: space-around;
+      align-items: center;
+    }
+
+    .nav-link{
+      color: var(--color-text);
+      font-size: 1.2rem;
+      text-decoration: none; 
+    }
+
+    .nav-link:hover{
+      color:red;
+      font-size: 1.5rem;
+      transition-duration: 0.4s;
+    }
+    .hamburger{
+      display: none;
+    }
+    .banner {
+      width: 100%;
+      height: 80vh;
+      background: linear-gradient(to right, #ece9e6, #ffffff);
+    }
+
+    @media only screen and (max-width:650px){
+      .nav{
+        position: fixed;   
+        display: flex;
+        width: 200px;
+        top: 0;
+        bottom: 0;
+        right: -200px;
+        background-color: var(--color-header); 
+        justify-content: space-between;
+        transition: right 0.3s ease-out;
+      }
+      .nav-list{
+        flex-direction: column;
+        height: 80%;
+        align-items: center; 
+        justify-content: space-between;
+        margin-top: 60px; 
+      }
+      .hamburger{
+        display: flex;
+        flex-direction: column;
+        justify-content: space-between;
+        height: 20px;
+        width: 25px;
+        cursor: pointer;
+        z-index: 2;
+        transition: all 0.3s ease-out;
+      }  
+      .line{
+        width: 100%;
+        height: 2px;
+        background-color: var(--color-text);
+        transform-origin: left;
+        transition: all 0.3s ease-out;
+      }
+
+      .hamburger.active{
+        margin-right: 60px;
+        transition: all 0.3s ease-out;
+      }
+      .hamburger.active .line:nth-child(2){
+        opacity: 0;
+      }
+      
+      .hamburger.active .line:nth-child(1){
+        transform: translateY(5px) rotate(45deg);
+      }
+      .hamburger.active .line:nth-child(3){
+        transform: translateY(5px) rotate(-45deg);
+      }
+    }
+
+  #Orders {
+    font-family: Arial, Helvetica, sans-serif;
+    border-collapse: collapse;
+    width: 100%;
+  }
+
+  #Orders td, #Orders th {
+    border: 1px solid #ddd;
+    padding: 8px;
+  }
+
+  #Orders td {
+    padding: 20px;
+    text-align: center;
+  }
+
+  #Orders th {
+    padding: 20px;
+    text-align: center;
+    color: white;
+  }
+  
+  tbody tr {
+    color: white;
+    background: linear-gradient(to right, #200122, #6f0000);
+  }
+
+  tbody tr:hover {
+    cursor: pointer;
+    color: black;
+    background: #ddd;
+  }
+
+  </style>
+</head>
+<body>  
+  <header class="header">
+    <img style="animation:move-text ease 0.5s forwards" src="img/rubylogo-re.png" height="100px" width="200px">
+    <nav class="nav">
+      <ul class="nav-list">
+        <li><a href="/TakeOrder1" target="_blank" class="nav-link">Take Order</a></li>
+        <li style="display:block;background-color:#0d6efd; padding: 15px 25px 15px 25px;"><a href="/logout" class="nav-link" >Logout</a></li>
+      </ul>
+    </nav>
+    
+    <div class="hamburger">
+      <span class="line"></span>
+      <span class="line"></span>
+      <span class="line"></span>
+    </div>
+  </header>
+  <% if ( orderDetails!="None" ) { %>
+    <div class="banner" ng-app="myApp" ng-controller="myController">    
+      <div  style="padding:20px;display:flex;align-items:center;justify-content:center;font-family:'Trebuchet MS', 'Lucida Sans Unicode', 'Lucida Grande', 'Lucida Sans', Arial, sans-serif;height:100%;flex-direction: column;">
+        <div style="width:100%;"><input type="text" ng-model="inp_customer" style="height:30px;font-size:20px;border: none;border-bottom: 1px solid black;" placeholder="Enter customer" /></div>
+        <br>
+        <table id='Orders'>
+          <thead>
+          <tr style='background: linear-gradient(to right, #0f0c29, #302b63, #24243e);'>
+            <th style="cursor: pointer;" ng-click="orderfn('order_id')">Order ID</th>
+            <th style="cursor: pointer;" ng-click="orderfn('date')">Date</th>
+            <th style="cursor: pointer;" ng-click="orderfn('customer')">Customer</th>
+            <th style="cursor: pointer;" ng-click="orderfn('district')">District</th>
+            <th style="cursor: pointer;" ng-click="orderfn('description')">Description</th>
+            <th>Remove</th>
+          </tr>
+        </thead>
+        <tbody>
+        <tr ng-repeat = "order in orders | filter: {customer: inp_customer} | orderBy: category">
+            <td>{{order.order_id}}</td>
+            <td>{{order.date | limitTo: 10}}</td>
+            <td>{{order.customer}}</td>
+            <td>{{order.district}}</td>
+            <td>{{order.description}}</td>
+            <td id="{{order.order_id}}" style="width:10%;" onclick='removeItem(this.id)'><img src="img/delete-icon.png" width="50%" height="50%"></td>
+          </tr>
+          </tbody>
+        </table>
+      </div>
+      </div>
+      <form name="removeOrder" action="/removeOrder"method="POST">
+        <input type="hidden" name="removeItemId" id="removeItemId" />
+      </form>
+   <% } else { %>
+  <div class="banner">  
+    <div style="display:flex;align-items:center;justify-content:center;font-family:'Trebuchet MS', 'Lucida Sans Unicode', 'Lucida Grande', 'Lucida Sans', Arial, sans-serif;font-size: 35px;height:100%;">
+      No Orders Placed!
+    </div>
+  </div>
+    <% } %>
+  <% if (orderDetails!="None") { %>
+    <script>
+      var orders = JSON.parse("<%= orderDetails %>".replaceAll("&#34;",'"'));
+      var app = angular.module("myApp",[]);
+      app.controller("myController",function($scope) {
+        $scope.orders = orders;
+        $scope.orderfn = function(x) {
+          $scope.category = x;
+        }
+      });
+    </script>
+    <% } %>
+  <script>
+    function removeItem(id,e) {
+      var confirmRemove = confirm("Do you want to delete order "+id+"?");
+      if (confirmRemove) {
+        document.getElementById("removeItemId").value = parseInt(id);
+        document.removeOrder.submit();
+      }
+      if (!e) var e = window.event;                // Get the window event
+      e.cancelBubble = true;                       // IE Stop propagation
+      if (e.stopPropagation) e.stopPropagation();  // Other Broswers
+      }
+    const hamburger = document.querySelector(".hamburger");
+const navBar = document.querySelector(".nav");
+const body = document.body;
+let open = false;
+
+hamburger.addEventListener("click" , () => {
+  toggleNavBar();
+})
+
+function toggleNavBar(){
+  if(!open){
+   navBar.style.right = "0";
+    hamburger.classList.add("active");
+    body.style.overflow = "hidden";
+   open = true;
+  }else{
+    navBar.style.right = "-255px";
+    hamburger.classList.remove("active");
+    body.style.overflow = "visible";
+    open = false;
+  }   
+}
+  </script>
+</body>
+</html>
